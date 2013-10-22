@@ -26,7 +26,7 @@
 #include "joystickdriver.c"
 //Theo's test and introduction
 //vars + functions here
-int speedScoop = 70;
+int speedScoop = 10;
 
 task main()
 {
