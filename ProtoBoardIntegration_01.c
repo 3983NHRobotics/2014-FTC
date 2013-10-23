@@ -29,7 +29,7 @@ task main() {
     // If A0 is less than 50% of the max value
     // turn off the LED, otherwise switch it on
 
-    if(inputdata < 512) //max value of inputdata is 1024
+    if(inputdata < 512) //max value of inputdata is 1023
       HTPBwriteIO(HTPB, 0x00);//write value of 0 (off) to protoboard
     else
       HTPBwriteIO(HTPB, 0x01);//write value of 1 (on) to protoboard
