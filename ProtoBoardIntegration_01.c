@@ -18,20 +18,21 @@ task main() {
 
   // The data to be written: 0x3F = 111111 binary,
   // makes all digital ports outputs.
-  HTPBsetupIO(HTPB, 0x3F);
+  HTPBsetupIO(HTPB, 0x3F);//setup IO connection to "HTPB" at 0x3F bin
 
   while(true) {
     // Read a 10bit wide analogue value from A0
-    inputdata = HTPBreadADC(HTPB, 0, 10);
+    inputdata = HTPBreadADC(HTPB, 0, 10); //A0 is probably some sensor, not sure if it needs to be defined anywhere else
     eraseDisplay();
     nxtDisplayTextLine(1, "%d", inputdata);
 
     // If A0 is less than 50% of the max value
     // turn off the LED, otherwise switch it on
-    if(inputdata < 512)
-      HTPBwriteIO(HTPB, 0x00);
+
+    if(inputdata < 512) //max value of inputdata is 1024
+      HTPBwriteIO(HTPB, 0x00);//write value of 0 (off) to protoboard
     else
-      HTPBwriteIO(HTPB, 0x01);
+      HTPBwriteIO(HTPB, 0x01);//write value of 1 (on) to protoboard
 
     wait1Msec(50);
   }

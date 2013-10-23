@@ -109,7 +109,7 @@ task main()
 
 		motor[motorLeft] = 70;
 		motor[motorRight] = 70;//go forward until...
-
+//Im not sure how the IR sensors would work with or without the protoboard
 		if (SensorValue[sensorHiTechnicIRSeeker600] >= 10) {//IR beacon is detected (weak)
 			motor[motorLeft] = 30;
 			motor[motorRight] = 30;//continue going forwards, but more slowly until...
@@ -121,19 +121,20 @@ task main()
 		}
 	}
 
-	turnLeft(1.5, 60);//turn to basket
+	turnRight(1.5, 60);//turn to basket
 
-	moveForward(2, 100);//move up to basket
+	moveBackward(2, 100);//move up to basket
 
 	armLift(1.7, 70);//raise arm
 
-	moveForward(0.5, 50);//move over basket
+	//moveForward(0.5, 50);//move over basket
 
-	hippoFlip(180);//flip bucket
+	//hippoFlip(180);//flip bucket
+	armLift(0.5, 70);
 
 	moveBackward(0.5, 50);//move away from basket
 
-	turnRight(2, 100);//turn away from basket
+	turnLeft(2, 100);//turn away from basket
 
 	armLift(1.7, -100);//lower arm
 
