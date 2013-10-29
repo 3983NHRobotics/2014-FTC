@@ -158,5 +158,3 @@ task main()
 		wait1Msec(10);
 	}//end of main while(true)
 }//end of task(main)
-
-//there are an even number of lines now

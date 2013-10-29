@@ -14,6 +14,10 @@
 			//																																										//
 			//####################################################################################//
 
+#include "Drivers\common.h"
+#include "Drivers\hitechnic-protoboard.h"
+#include "joystickdriver.c"
+
 task main () {
   // Arrays to hold I2C message sent to slave and response
   sbyte I2Cmessage[4];

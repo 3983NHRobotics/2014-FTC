@@ -22,7 +22,7 @@ task main() {
 
   while(true) {
     // Read a 10bit wide analogue value from A0
-    inputdata = HTPBreadADC(HTPB, 0, 10); //A0 is probably some sensor, not sure if it needs to be defined anywhere else
+    inputdata = HTPBreadADC(HTPB, 0, 10); //A0 is probably some sensor, not sure if it needs to be defined anywhere else... probably not because nothing is complaining.
     eraseDisplay();
     nxtDisplayTextLine(1, "%d", inputdata);
 
