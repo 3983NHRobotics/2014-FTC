@@ -1,15 +1,15 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTServo,  HTMotor)
-#pragma config(Sensor, S2,     sensorSonar,    sensorHiTechnicIRSeeker600)
-#pragma config(Sensor, S3,     sensorLight,    sensorLightActive)
-#pragma config(Motor,  mtr_S1_C1_1,     motorLeft,     tmotorTetrix, PIDControl, encoder)
-#pragma config(Motor,  mtr_S1_C1_2,     motorRight,    tmotorTetrix, PIDControl, reversed, encoder)
-#pragma config(Motor,  mtr_S1_C2_1,     motorArm,      tmotorTetrix, PIDControl, encoder)
-#pragma config(Motor,  mtr_S1_C2_2,     motorG,        tmotorTetrix, PIDControl, encoder)
-#pragma config(Motor,  mtr_S1_C4_1,     motorH,        tmotorTetrix, openLoop)
+#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S2,     sensorLight,    sensorLightActive)
+#pragma config(Motor,  mtr_S1_C1_1,     motorLeft,     tmotorTetrix, PIDControl, reversed, encoder)
+#pragma config(Motor,  mtr_S1_C1_2,     motorRight,    tmotorTetrix, PIDControl, encoder)
+#pragma config(Motor,  mtr_S1_C2_1,     motorArm,     tmotorTetrix, PIDControl, encoder)
+#pragma config(Motor,  mtr_S1_C2_2,     motorScoop,    tmotorTetrix, PIDControl, encoder)
+#pragma config(Motor,  mtr_S1_C4_1,     motorLift,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_2,     motorI,        tmotorTetrix, openLoop)
-#pragma config(Servo,  srvo_S1_C3_1,    servo1,               tServoNone)
-#pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
-#pragma config(Servo,  srvo_S1_C3_3,    servo3,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_1,    servoSweep,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_2,    servoLift,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_3,    servoClamp,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_6,    servo6,               tServoNone)
@@ -160,20 +160,17 @@ void MissionImpossible()
 }
 
 
-void hippoFlip(int deg) {
-
-	servo[srvo_S1_C3_1] = deg;
-
+void armClamp() {
+	servo[servoClamp] = 185;
 }
 
-void hippoScoop(int deg) {
-	//something
+void armUnClamp() {
+	servo[servoClamp] = 26;
 }
 
 void initializeRobot() {
 
 	PlaySound(soundFastUpwardTones);
-	servo[srvo_S1_C3_1] = 165;
 	return;
 
 }
@@ -185,80 +182,23 @@ task main()
 
 	initializeRobot();
 	waitForStart();
-
-	moveForward(3.75, 100);
-
-	//autonomous code chain loop thing begin
-	//function format: func(time<seconds>, power<percent>) or func(angle<degrees>)
-
-	/*
-// SEMI-DYNAMIC CODE
-		// drive for 3.5 seconds
-		moveForward(3.5, 100);
-
-		// turn 90 degrees to the right
-		//turnRight(2.5, 100);
-
-		// drive for 2.5 seconds
-	//	moveForward(2.5, 100);
-
-		// play accomplishment sound after we land on the ramp
-		MissionImpossible();
-		return;
-		*/
-
-
-
-// FULLY DYNAMIC CODE W/ SCORING OF CUBE
-		while(running)
-		{
-				motor[motorLeft] = 70;
-				motor[motorRight] = 70;
-
-				// weak signal (10%)
-				if(SensorValue[sensorHiTechnicIRSeeker600] == 2)
-				{
-					motor[motorLeft] = 50;
-					motor[motorRight] = 50;
-				}
-
-				// weak signal (20%)
-				if(SensorValue[sensorHiTechnicIRSeeker600] == 3)
-				{
-					motor[motorLeft] = 30;
-					motor[motorRight] = 30;
-				}
-
-				// stop motion if IR found
-				if(SensorValue[sensorHiTechnicIRSeeker600] == 4)
-				{
-					motor[motorLeft] = 0;
-					motor[motorRight] = 0;
-
-					turnLeft(0.25, 1000); //turn away from basket
-
-					motor[motorArm] = 30; //flip arm
-					wait1Msec(1000);
-					motor[motorArm] = 0;
-
-					servo[srvo_S1_C3_1] = 0; //open servo grabber
-
-					motor[motorArm] = -30; //put basket back down
-					wait1Msec(1000);
-					motor[motorArm] = 0;
-
-					turnRight(0.25, 100); //turn forward again
-
-					moveForward(2500, 100); //go to end of ramp
-
-					turnRight(0.25, 100); //turn, forward, turn, drive up ramp
-					moveForward(0.75, 100);
-					turnRight(0.25, 100);
-					moveForward(1000, 100);
-
-					killall(); //stop everything
-					running = false; //make sure robot does not drive up a wall again
-
-			}
+	armClamp();//close bucket
+	
+	moveForward(3.75, 100);//drive in front of ramp
+	
+	//armLift(3, 100);//lift arm
+	
+	turnRight(2, 100);//turn towards ramp
+	
+	moveForward(1.5, 100);//drive onto ramp
+//should be on the ramp now
+	turnLeft(5, 100);//turn away from basket
+	
+	//armLift(2, 100);//lift arm to basket
+	
+	armUnClamp();//drop blocks
+	
+	MissionImpossible();
+		
 		}
-	}
+	
