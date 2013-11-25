@@ -17,10 +17,10 @@
 
 //####################################################################################//
 //                                                                                                                                                                                                                                                                                                                                                //
-//                                                                                                                          2013-2014 TeleOp Code                                                                                                                          //
-//                                                                                                          Team 3983 - Highlands Robotics                                                                                                        //
-//                                                                                                                                   Code by T. Kluge                                                                                                                                        //
-//                                                                                                                                                                                                                                                                                                                                                //
+//                                   2013-2014 TeleOp Code                                                                                                                          //
+//                               Team 3983 - Highlands Robotics                                                                                                        //
+//                                      Code by T. Kluge                                                                                                                                        //
+//                                                                                                                                                                                                                                                                                                      //
 //####################################################################################//
 
 
@@ -37,15 +37,22 @@ task main()
 		getJoystickSettings(joystick);
 		//Anti-RageQuit code (prevents movement when the joysticks are just a bit off)
 
+		//CONTROLLER 1 JOYSTICK 1 - Drive (Forward/Backward)
 		if((joystick.joy1_y1<10&&joystick.joy1_y1>-10)&&(joystick.joy1_x1<10&&joystick.joy1_x1>-10))
 		{
 			joystick.joy1_y1=0;
 			joystick.joy1_x1=0;
 		}
+		//CONTROLLER 1 JOYSTICK 2 - Drive (Turning)
 		if((joystick.joy1_x2<10&&joystick.joy1_x2>-10)&&(joystick.joy1_y2<10&&joystick.joy1_y2>-10))
 		{
 			joystick.joy1_x2=0;
 			joystick.joy1_y2=0;
+		}
+		//CONTROLLER 2 JOYSTICK 2 - Flag lift motor
+		if(joystick.joy2_x2<10&&joystick.joy2_x2>-10)
+		{
+			joystick.joy2_x2=0;
 		}
 
 		//main drive motor control
@@ -54,50 +61,55 @@ task main()
 		motor[motorRight] = (joystick.joy1_y1 - joystick.joy1_x2);
 
 		//SWEEPER ARM
-		if (joystick.joy2_TopHat == 0) {
+		if (joystick.joy2_TopHat == 0 || joy1Btn(7)) { //Joy2TopHat or Joy1 lBumber
 			motor[motorScoop] = 100;
-			} else if (joystick.joy2_TopHat == 4) {
-				motor[motorScoop] = -100;
-				} else {
-				motor[motorScoop] = 0;
-			}
-		
+			} else if (joystick.joy2_TopHat == 4 || joy1Btn(8)) { //Joy2TopHat or Joy1 rBumper
+			motor[motorScoop] = -100;
+			} else {
+			motor[motorScoop] = 0;
+		}
+
 
 		//WORM GEAR ARM DRIVE
-		if (joy2Btn(5)) {
-			motor[motorArm] = 100;
-			} else if(joy2Btn(6)) {
-			motor[motorArm] = -100;
-			} else {
-			motor[motorArm] = 0;
+		if (ServoValue[servoSweep] < 125) { //makes sure the sweeper arm is lifted up before the main arm can move
+			if (joy2Btn(5)) {									//so that the main arm cannot get stuck on the sweeper arm.
+				servo[servoSweep] = 0;//sets the sweeper arm to upward pos just in case
+				motor[motorArm] = 100;
+				} else if(joy2Btn(6)) {
+				servo[servoSweep] = 0;//sets the sweeper arm to upward pos just in case
+				motor[motorArm] = -100;
+				} else {
+				motor[motorArm] = 0;
+			}
 		}
 
 		//BUCKET CLAMP
-		if (joy2Btn(2)) {
-			servo[servoClamp] = 26;
-			} else if (joy2Btn(4)) {
-			servo[servoClamp] = 185;
+		if (joy2Btn(7)) { //Left Trigger
+			servo[servoClamp] = 25;
+			} else if (joy2Btn(8)) { //Right Trigger
+			servo[servoClamp] = 157;
 		}
+
+
 		//SWEEPER ARM RAISE/LOWER
-		if (joy2Btn(3)) {
-			servo[servoSweep] = 0;
-			motor[motorScoop] = -100;
+		if (joy2Btn(3) || joy1Btn(6)) { //Joy2 bPadRight or Joy1 rBumper
+			servo[servoSweep] = 0;//Raised
+			motor[motorScoop] = -100;//sets the bevel gears in by spinning sweeper motor
 			wait1Msec(300);
 			motor[motorScoop] = 0;
-			} else if (joy2Btn(1)) {
-			servo[servoSweep] = 130;
+			} else if (joy2Btn(1) || joy1Btn(5)) { //Joy2 bPadLeft or Joy1 lBumper
+			servo[servoSweep] = 130;//Lowered
 		}
 
 		//SECTION FOR FLAG LIFTER
-		if (joy2Btn(11)) {
-			if (joy2Btn(8)) {
-				servo[servoLift] = 0;
-				} else if (joy2Btn(7)) {
-				servo[servoLift] = 102;
-			}
-			//spinny
-			motor[motorLift] = joystick.joy2_x2;
+		if (joy2Btn(2)) { //bPadTop
+			servo[servoLift] = 177;
+			} else if (joy2Btn(4)) {//bPadBottom
+			servo[servoLift] = 61;
+			motor[motorLift] = 0;
 		}
+		motor[motorLift] = joystick.joy2_x2;
+
 		//TEST THING
 		if (bDisconnected) {
 			joystick.joy1_y1 = 0;
@@ -105,6 +117,6 @@ task main()
 			joystick.joy2_TopHat = -1;
 		}
 		//Anti-jitter
-		wait1Msec(10);
+		wait1Msec(3 );
 	}//end of main while(true)
 }//end of task(main)
