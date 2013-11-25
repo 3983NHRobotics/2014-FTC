@@ -117,6 +117,6 @@ task main()
 			joystick.joy2_TopHat = -1;
 		}
 		//Anti-jitter
-		wait1Msec(3 );
+		wait1Msec(3);
 	}//end of main while(true)
 }//end of task(main)
