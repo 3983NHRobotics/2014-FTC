@@ -1,15 +1,18 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTServo,  HTMotor)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S2,     sensorLight,    sensorLightActive)
+#pragma config(Motor,  motorA,          motorAutoScore, tmotorNXT, PIDControl, encoder)
+#pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
+#pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  mtr_S1_C1_1,     motorLeft,     tmotorTetrix, PIDControl, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C1_2,     motorRight,    tmotorTetrix, PIDControl, encoder)
-#pragma config(Motor,  mtr_S1_C2_1,     motorArm,     tmotorTetrix, PIDControl, encoder)
+#pragma config(Motor,  mtr_S1_C2_1,     motorArm,      tmotorTetrix, PIDControl, encoder)
 #pragma config(Motor,  mtr_S1_C2_2,     motorScoop,    tmotorTetrix, PIDControl, encoder)
-#pragma config(Motor,  mtr_S1_C4_1,     motorLift,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_1,     motorLift,     tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_2,     motorI,        tmotorTetrix, openLoop)
-#pragma config(Servo,  srvo_S1_C3_1,    servoSweep,               tServoNone)
-#pragma config(Servo,  srvo_S1_C3_2,    servoLift,               tServoNone)
-#pragma config(Servo,  srvo_S1_C3_3,    servoClamp,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_1,    servoSweep,           tServoStandard)
+#pragma config(Servo,  srvo_S1_C3_2,    servoLift,            tServoStandard)
+#pragma config(Servo,  srvo_S1_C3_3,    servoClamp,           tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_6,    servo6,               tServoNone)
@@ -169,18 +172,23 @@ task main()
 	//while(running) {
 	servo[servoSweep] = 0;
 	servo[servoLift] = 0;
+
+	motor[motorAutoScore] = 70;
+	wait1Msec(500);
+	motor[motorAutoScore] = 0;
+
 	//armClamp();//close bucket
 
-	moveForward(2.5, 100);
+	//moveForward(2.5, 100);
 
 	//armLift(3, 100);//lift arm
 	wait1Msec(300);
 
-	turnRight(1, 100);//turn towards ramp
+	//turnRight(1, 100);//turn towards ramp
 
 	wait1Msec(300);
 
-	moveForward(2.7, 100);//drive onto ramp
+	//moveForward(2.7, 100);//drive onto ramp
 	//should be on the ramp now
 	//turnLeft(1, 100);//turn away from basket
 
@@ -188,7 +196,7 @@ task main()
 
 	//armUnClamp();//drop blocks
 
-  MissionImpossible();
+  //MissionImpossible();
 
 
 
