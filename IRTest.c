@@ -6,17 +6,17 @@
 
 task main()
 {
-	int IR1value = SensorValue[IR1];
 	while(true)
 	{
-		eraseDisplay(); //Gets rid of the default joystickdriver status screen
-		nxtDisplayCenteredTextLine(5,"%d",IR1value);
 
-		if (joy1Btn(1)) {
-			motor[motorAutoScore] = 70;
-		}
-		if (joy1Btn(2)) {
-			motor[motorAutoScore] = -70;
+		if (joy1Btn(1) == 1) {
+			motor[motorAutoScore] = 40;
+		} else
+		if (joy1Btn(2) == 1) {
+			motor[motorAutoScore] = -40;
+		} else
+		{
+			motor[motorAutoScore] = 0;
 		}
 		wait1Msec(3);
 	}

@@ -1,5 +1,8 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTServo,  HTMotor)
-#pragma config(Sensor, S3,     HTIRS2,              sensorI2CCustom)
+#pragma config(Sensor, S3,     HTIRS2,         sensorI2CCustom)
+#pragma config(Motor,  motorA,          motorAutoScore, tmotorNXT, PIDControl, encoder)
+#pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
+#pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  mtr_S1_C1_1,     motorLeft,     tmotorTetrix, PIDControl, encoder)
 #pragma config(Motor,  mtr_S1_C1_2,     motorRight,    tmotorTetrix, PIDControl, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C2_1,     motorArm,      tmotorTetrix, PIDControl, encoder)
@@ -34,15 +37,13 @@ void moveForward(int mtime, int mpower);
 void moveBackward(int mtime, int mpower);
 void turnLeft(int mtime, int mpower);
 void turnRight(int mtime, int mpower);
-void armLift(int mtime, int mpower);
+void scoreCube();
 void killall();
 void MissionImpossible();
-void hippoFlip(int deg);
-void hippoScoop(int deg);
 void initializeRobot();
 void displayText(int nLineNumber, const string cChar, int nValueDC, int nValueAC);
 void displayText3(int nLineNumber, const string cChar, int nValueDC, int nValueAC, int nValueEnh);
-bool running = true;
+bool searching = true;
 
 // global variables
 long nNumbCyles;
@@ -51,7 +52,8 @@ string sTextLines[8];
 
 task main()
 {
-//=================================================================================================
+	//_________________________________BLOCK TO GET SENSORVALUES FROM IRSEEKER_________________________
+	//=================================================================================================
 	int _dirDC = 0;
 	int _dirAC = 0;
 	int dcS1, dcS2, dcS3, dcS4, dcS5 = 0;
@@ -61,233 +63,248 @@ task main()
 	// the default DSP mode is 1200 Hz.
 	tHTIRS2DSPMode _mode = DSP_1200;
 
-
-
 	initializeRobot();
 	waitForStart();
 
-	moveForward(3.75, 100);
-
 	// FULLY DYNAMIC CODE W/ SCORING OF CUBE
-	while(true)
+	while(searching)
 	{
 
-	_dirDC = HTIRS2readDCDir(HTIRS2);
-      if (_dirDC < 0)
-        break; // I2C read error occurred
+		_dirDC = HTIRS2readDCDir(HTIRS2);
+		if (_dirDC < 0)
+			break; // I2C read error occurred
 
-      // read the current modulated signal direction
-      _dirAC = HTIRS2readACDir(HTIRS2);
-      if (_dirAC < 0)
-        break; // I2C read error occurred
+		// read the current modulated signal direction
+		_dirAC = HTIRS2readACDir(HTIRS2);
+		if (_dirAC < 0)
+			break; // I2C read error occurred
 
-      // Read the individual signal strengths of the internal sensors
-      // Do this for both unmodulated (DC) and modulated signals (AC)
-      if (!HTIRS2readAllDCStrength(HTIRS2, dcS1, dcS2, dcS3, dcS4, dcS5))
-        break; // I2C read error occurred
-      if (!HTIRS2readAllACStrength(HTIRS2, acS1, acS2, acS3, acS4, acS5 ))
-        break; // I2C read error occurred
+		// Read the individual signal strengths of the internal sensors
+		// Do this for both unmodulated (DC) and modulated signals (AC)
+		if (!HTIRS2readAllDCStrength(HTIRS2, dcS1, dcS2, dcS3, dcS4, dcS5))
+			break; // I2C read error occurred
+		if (!HTIRS2readAllACStrength(HTIRS2, acS1, acS2, acS3, acS4, acS5 ))
+			break; // I2C read error occurred
 
-      // Read the Enhanced direction and strength
-			if (!HTIRS2readEnhanced(HTIRS2, _dirEnh, _strEnh))
-        break; // I2C read error occurred
+		// Read the Enhanced direction and strength
+		if (!HTIRS2readEnhanced(HTIRS2, _dirEnh, _strEnh))
+			break; // I2C read error occurred
 
-        //shows status of sensorvals on screen
-      eraseDisplay();
-      displayText3(1, "D", _dirDC, _dirAC, _dirEnh);
-      displayText(2, "0", dcS1, acS1);
-      displayText(3, "1", dcS2, acS2);
-      displayText3(4, "2", dcS3, acS3, _strEnh);
-      displayText(5, "3", dcS4, acS4);
-      displayText(6, "4", dcS5, acS5);
+		//shows status of sensorvals on screen
 
-        //=================================================================================================
+		displayText3(1, "D", _dirDC, _dirAC, _dirEnh);
+		displayText(2, "0", dcS1, acS1);
+		displayText(3, "1", dcS2, acS2);
+		displayText3(4, "2", dcS3, acS3, _strEnh);
+		displayText(5, "3", dcS4, acS4);
+		displayText(6, "4", dcS5, acS5);
 
+		//______________END SENSORVAL BLOCK________________________________________________________________
+		//=================================================================================================
+
+		if (acS3 < 150) { //While sensor is heading towards beacon: acs3 = side
+			motor[motorLeft] = -80;
+			motor[motorRight] = -80;
+		}
+
+		if (acS3 > 150) { //if sensor is directly in front of beacon
+			motor[motorLeft] = 0;
+			motor[motorRight] = 0;
+			wait1Msec(200);
+			motor[motorLeft] = 30;
+			motor[motorRight] = 30;
+			wait1Msec(200);
+			motor[motorLeft] = 0;
+			motor[motorRight] = 0;
+			searching = false;
+		}
+      wait1Msec(30);
+		}//while searching
+
+		scoreCube();
+
+	}//task main
+
+	//Define functions here instead of at the top
+	void moveForward(int mtime, int mpower) {
+
+		motor[motorLeft] = mpower;
+		motor[motorRight] = mpower;
+		wait1Msec(mtime * 1000);
+		motor[motorLeft] = 0;
+		motor[motorRight] = 0;
+
+	}
+
+	void moveBackward(int mtime, int mpower) {
+
+		motor[motorLeft] = -1 * mpower;
+		motor[motorRight] = - 1 * mpower;
+		wait1Msec(mtime * 1000);
+		motor[motorLeft] = 0;
+		motor[motorRight] = 0;
+
+	}
+
+	void turnLeft(int mtime, int mpower) {
+
+		motor[motorLeft] = -1 * mpower;
+		motor[motorRight] = mpower;
+		wait1Msec(mtime * 1000);
+		motor[motorLeft] = 0;
+		motor[motorRight] = 0;
+
+	}
+
+	void turnRight(int mtime, int mpower) {
+
+		motor[motorLeft] = mpower;
+		motor[motorRight] = -1 * mpower;
+		wait1Msec(mtime * 1000);
+		motor[motorLeft] = 0;
+		motor[motorRight] = 0;
+
+	}
+
+	void armLift(int mtime, int mpower) {
+
+		motor[motorArm] = mpower;
+		//motor[motorArm2] = mpower;
+		wait1Msec(mtime * 1000);
+		motor[motorArm] = 0;
+		//motor[motorArm2] = 0;
+
+	}
+
+	void scoreCube() {
+			motor[motorAutoScore] = 40;
+			wait1Msec(500);
+			motor[motorAutoScore] = 0;
+
+			motor[motorAutoScore] = -40;
+			wait1Msec(500);
+			motor[motorAutoScore] = 0;
+		}
+
+	void killall() {
+		motor[motorLeft] = 0;
+		motor[motorRight] = 0;
+		motor[motorArm] = 0;
+		PlaySound(soundException);
+		PlaySound(soundDownwardTones);
+	}
+
+	void MissionImpossible()
+	{
+		//        100 = Tempo
+		//          6 = Default octave
+		//    Quarter = Default note length
+		//        10% = Break between notes
+		//
+		PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
+		PlayTone(  933,    7); wait1Msec(  75);  // Note(D#, Duration(32th))
+		PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
+		PlayTone(  933,    7); wait1Msec(  75);  // Note(D#, Duration(32th))
+		PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
+		PlayTone(  933,    7); wait1Msec(  75);  // Note(D#, Duration(32th))
+		PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
+		PlayTone(  933,    7); wait1Msec(  75);  // Note(D#, Duration(32th))
+		PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
+		PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
+		PlayTone(  933,    7); wait1Msec(  75);  // Note(D#, Duration(32th))
+		PlayTone(  988,    7); wait1Msec(  75);  // Note(E, Duration(32th))
+		PlayTone( 1047,    7); wait1Msec(  75);  // Note(F, Duration(32th))
+		PlayTone( 1109,    7); wait1Msec(  75);  // Note(F#, Duration(32th))
+		PlayTone( 1175,    7); wait1Msec(  75);  // Note(G, Duration(32th))
+		PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
+		PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
+		PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
+		PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
+		PlayTone( 1398,   14); wait1Msec( 150);  // Note(A#, Duration(16th))
+		PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
+		PlayTone(  784,   14); wait1Msec( 150);  // Note(C, Duration(16th))
+		PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
+		PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
+		PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
+		PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
+		PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
+		PlayTone( 1047,   14); wait1Msec( 150);  // Note(F, Duration(16th))
+		PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
+		PlayTone( 1109,   14); wait1Msec( 150);  // Note(F#, Duration(16th))
+		PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
+		PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
+		PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
+		PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
+		PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
+		PlayTone( 1398,   14); wait1Msec( 150);  // Note(A#, Duration(16th))
+		PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
+		PlayTone(  784,   14); wait1Msec( 150);  // Note(C, Duration(16th))
+		PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
+		PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
+		PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
+		PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
+		PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
+		PlayTone( 1047,   14); wait1Msec( 150);  // Note(F, Duration(16th))
+		PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
+		PlayTone( 1109,   14); wait1Msec( 150);  // Note(F#, Duration(16th))
+		PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
+		PlayTone( 1398,   14); wait1Msec( 150);  // Note(A#, Duration(16th))
+		PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
+		PlayTone(  880,  108); wait1Msec(1200);  // Note(D, Duration(Half))
+		PlayTone(    0,    7); wait1Msec(  75);  // Note(Rest, Duration(32th))
+		PlayTone( 1398,   14); wait1Msec( 150);  // Note(A#, Duration(16th))
+		PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
+		PlayTone(  831,  108); wait1Msec(1200);  // Note(C#, Duration(Half))
+		PlayTone(    0,    7); wait1Msec(  75);  // Note(Rest, Duration(32th))
+		PlayTone( 1398,   14); wait1Msec( 150);  // Note(A#, Duration(16th))
+		PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
+		PlayTone(  784,  108); wait1Msec(1200);  // Note(C, Duration(Half))
+		PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
+		PlayTone(  932,   14); wait1Msec( 150);  // Note(A#5, Duration(16th))
+		PlayTone(  784,   14); wait1Msec( 150);  // Note(C, Duration(16th))
+		return;
+	}
+
+	void initializeRobot() {
+
+		PlaySound(soundFastUpwardTones);
+		servo[srvo_S1_C3_1] = 165;
+		return;
+
+	}
+
+	void displayText(int nLineNumber, const string cChar, int nValueDC, int nValueAC)
+	{
+		string sTemp;
+
+		StringFormat(sTemp, "%4d %4d", nValueDC, nValueAC);
+
+		// Check if the new line is the same as the previous one
+		// Only update screen if it's different.
+		if (sTemp != sTextLines[nLineNumber])
+		{
+			string sTemp2;
+
+			sTextLines[nLineNumber] = sTemp;
+			StringFormat(sTemp2, "%s:%s", cChar, sTemp);
+			nxtDisplayTextLine(nLineNumber, sTemp2);
 		}
 	}
-}
 
-//Define functions here instead of at the top
-void moveForward(int mtime, int mpower) {
+	void displayText3(int nLineNumber, const string cChar, int nValueDC, int nValueAC, int nValueEnh)
+	{
+		string sTemp;
 
-	motor[motorLeft] = -1 * mpower;
-	motor[motorRight] = -1 * mpower;
-	wait1Msec(mtime * 1000);
-	motor[motorLeft] = 0;
-	motor[motorRight] = 0;
+		StringFormat(sTemp, "%4d %4d %3d", nValueDC, nValueAC, nValueEnh);
 
-}
+		// Check if the new line is the same as the previous one
+		// Only update screen if it's different.
+		if (sTemp != sTextLines[nLineNumber])
+		{
+			string sTemp2;
 
-void moveBackward(int mtime, int mpower) {
-
-	motor[motorLeft] = mpower;
-	motor[motorRight] = mpower;
-	wait1Msec(mtime * 1000);
-	motor[motorLeft] = 0;
-	motor[motorRight] = 0;
-
-}
-
-void turnLeft(int mtime, int mpower) {
-
-	motor[motorLeft] = -1 * mpower;
-	motor[motorRight] = mpower;
-	wait1Msec(mtime * 1000);
-	motor[motorLeft] = 0;
-	motor[motorRight] = 0;
-
-}
-
-void turnRight(int mtime, int mpower) {
-
-	motor[motorLeft] = mpower;
-	motor[motorRight] = -1 * mpower;
-	wait1Msec(mtime * 1000);
-	motor[motorLeft] = 0;
-	motor[motorRight] = 0;
-
-}
-
-void armLift(int mtime, int mpower) {
-
-	motor[motorArm] = mpower;
-	//motor[motorArm2] = mpower;
-	wait1Msec(mtime * 1000);
-	motor[motorArm] = 0;
-	//motor[motorArm2] = 0;
-
-}
-
-void killall() {
-	motor[motorLeft] = 0;
-	motor[motorRight] = 0;
-	motor[motorArm] = 0;
-	PlaySound(soundException);
-	PlaySound(soundDownwardTones);
-}
-
-void MissionImpossible()
-{
-	//        100 = Tempo
-	//          6 = Default octave
-	//    Quarter = Default note length
-	//        10% = Break between notes
-	//
-	PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
-	PlayTone(  933,    7); wait1Msec(  75);  // Note(D#, Duration(32th))
-	PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
-	PlayTone(  933,    7); wait1Msec(  75);  // Note(D#, Duration(32th))
-	PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
-	PlayTone(  933,    7); wait1Msec(  75);  // Note(D#, Duration(32th))
-	PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
-	PlayTone(  933,    7); wait1Msec(  75);  // Note(D#, Duration(32th))
-	PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
-	PlayTone(  880,    7); wait1Msec(  75);  // Note(D, Duration(32th))
-	PlayTone(  933,    7); wait1Msec(  75);  // Note(D#, Duration(32th))
-	PlayTone(  988,    7); wait1Msec(  75);  // Note(E, Duration(32th))
-	PlayTone( 1047,    7); wait1Msec(  75);  // Note(F, Duration(32th))
-	PlayTone( 1109,    7); wait1Msec(  75);  // Note(F#, Duration(32th))
-	PlayTone( 1175,    7); wait1Msec(  75);  // Note(G, Duration(32th))
-	PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
-	PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
-	PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
-	PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
-	PlayTone( 1398,   14); wait1Msec( 150);  // Note(A#, Duration(16th))
-	PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
-	PlayTone(  784,   14); wait1Msec( 150);  // Note(C, Duration(16th))
-	PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
-	PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
-	PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
-	PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
-	PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
-	PlayTone( 1047,   14); wait1Msec( 150);  // Note(F, Duration(16th))
-	PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
-	PlayTone( 1109,   14); wait1Msec( 150);  // Note(F#, Duration(16th))
-	PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
-	PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
-	PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
-	PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
-	PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
-	PlayTone( 1398,   14); wait1Msec( 150);  // Note(A#, Duration(16th))
-	PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
-	PlayTone(  784,   14); wait1Msec( 150);  // Note(C, Duration(16th))
-	PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
-	PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
-	PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
-	PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
-	PlayTone(    0,   27); wait1Msec( 300);  // Note(Rest, Duration(Eighth))
-	PlayTone( 1047,   14); wait1Msec( 150);  // Note(F, Duration(16th))
-	PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
-	PlayTone( 1109,   14); wait1Msec( 150);  // Note(F#, Duration(16th))
-	PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
-	PlayTone( 1398,   14); wait1Msec( 150);  // Note(A#, Duration(16th))
-	PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
-	PlayTone(  880,  108); wait1Msec(1200);  // Note(D, Duration(Half))
-	PlayTone(    0,    7); wait1Msec(  75);  // Note(Rest, Duration(32th))
-	PlayTone( 1398,   14); wait1Msec( 150);  // Note(A#, Duration(16th))
-	PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
-	PlayTone(  831,  108); wait1Msec(1200);  // Note(C#, Duration(Half))
-	PlayTone(    0,    7); wait1Msec(  75);  // Note(Rest, Duration(32th))
-	PlayTone( 1398,   14); wait1Msec( 150);  // Note(A#, Duration(16th))
-	PlayTone( 1175,   14); wait1Msec( 150);  // Note(G, Duration(16th))
-	PlayTone(  784,  108); wait1Msec(1200);  // Note(C, Duration(Half))
-	PlayTone(    0,   14); wait1Msec( 150);  // Note(Rest, Duration(16th))
-	PlayTone(  932,   14); wait1Msec( 150);  // Note(A#5, Duration(16th))
-	PlayTone(  784,   14); wait1Msec( 150);  // Note(C, Duration(16th))
-	return;
-}
-
-
-void hippoFlip(int deg) {
-
-	servo[srvo_S1_C3_1] = deg;
-
-}
-
-void hippoScoop(int deg) {
-	//something
-}
-
-void initializeRobot() {
-
-	PlaySound(soundFastUpwardTones);
-	servo[srvo_S1_C3_1] = 165;
-	return;
-
-}
-
-void displayText(int nLineNumber, const string cChar, int nValueDC, int nValueAC)
-{
-  string sTemp;
-
-	StringFormat(sTemp, "%4d %4d", nValueDC, nValueAC);
-
-  // Check if the new line is the same as the previous one
-  // Only update screen if it's different.
-  if (sTemp != sTextLines[nLineNumber])
-  {
-    string sTemp2;
-
-    sTextLines[nLineNumber] = sTemp;
-    StringFormat(sTemp2, "%s:%s", cChar, sTemp);
-    nxtDisplayTextLine(nLineNumber, sTemp2);
-  }
-}
-
-void displayText3(int nLineNumber, const string cChar, int nValueDC, int nValueAC, int nValueEnh)
-{
-  string sTemp;
-
-  StringFormat(sTemp, "%4d %4d %3d", nValueDC, nValueAC, nValueEnh);
-
-  // Check if the new line is the same as the previous one
-  // Only update screen if it's different.
-  if (sTemp != sTextLines[nLineNumber])
-  {
-    string sTemp2;
-
-    sTextLines[nLineNumber] = sTemp;
-    StringFormat(sTemp2, "%s:%s", cChar, sTemp);
-    nxtDisplayTextLine(nLineNumber, sTemp2);
-  }
-}
+			sTextLines[nLineNumber] = sTemp;
+			StringFormat(sTemp2, "%s:%s", cChar, sTemp);
+			nxtDisplayTextLine(nLineNumber, sTemp2);
+		}
+	}

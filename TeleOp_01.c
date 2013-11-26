@@ -103,9 +103,9 @@ task main()
 
 		//SECTION FOR FLAG LIFTER
 		if (joy2Btn(2)) { //bPadTop
-			servo[servoLift] = 177;
+			servo[servoLift] = 124;
 			} else if (joy2Btn(4)) {//bPadBottom
-			servo[servoLift] = 61;
+			servo[servoLift] = 225;
 			motor[motorLift] = 0;
 		}
 		motor[motorLift] = joystick.joy2_x2;
