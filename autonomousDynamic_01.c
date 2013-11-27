@@ -20,9 +20,9 @@
 
 //####################################################################################//
 //																																										//
-//															2013-2014 Autonomous Code															//
-//													  Team 3983 - Highlands Robotics													//
-//												  Code by T. Kluge & Music by James H.											//
+//			        	2013-2014 Autonomous Code															//
+//				     Team 3983 - Highlands Robotics													//
+//				  Code by T. Kluge & Music by James H.											//
 //																																										//
 //####################################################################################//
 
