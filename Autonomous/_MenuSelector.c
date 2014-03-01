@@ -6,16 +6,18 @@
 //
 //###################################################################################//
 
+//#include "Auton_ALL.c";
+
 string menuFirst = "AutCh";
 string placeholder = "PlacHold";
 string progFirst = "fw-fw-L1";
 string progSecond = "fw-fw-L2";
 string progThird = "fw-bw-L1";
 string progFourth = "fw-bw-L2";
-string progFifth = "DoNotUse";
-string progSixth = "AutonDUM";
+string progFifth = "AutonDUM";
+string progSixth = "DoNotUse";
 
-int totalChoices = 5;
+int totalChoices = 6;
 int selectionValue = 1;
 int selectedProgram = -1;
 int PROGID;
@@ -30,6 +32,8 @@ void updateSelFourth();
 void updateSelFifth();
 void updateSelSixth();
 void runSelectedPgm();
+
+//#include "../drivers/JoystickDriver_CustomNoSplash.c"
 
 void chooseProgram() {
 
@@ -74,9 +78,6 @@ void chooseProgram() {
 			selectionValue = totalChoices;
 			eraseDisplay();
 			updateDisplay();
-		}
-		if (selectionValue == 5) {
-			setBatPower();
 		}
 	}
 }
@@ -191,7 +192,7 @@ void runSelectedPgm() {
 			break;
 		case 6:
 			PROGID = 6;
+			progSelected = false;
 			break;
 	}
 }
-
