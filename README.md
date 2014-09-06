@@ -1,4 +1,4 @@
-teleop + autonomous
+2014 TeleOp & Autonous code for FTC Cascade Effect Challenge
 ======
 
-2013 Tele-Op Code for FIRST Tech Challenge
+I moved the autonomous into the same repo as the teleop for simplicity
