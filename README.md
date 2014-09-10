@@ -3,7 +3,8 @@
 
 I moved the autonomous into the same repo as the teleop for simplicity
 
-<hr id="teleop"><!--- I needed the id --->
+<hr id="teleop">
+<!--- I needed the id --->
 
 ##Tele0p
 
