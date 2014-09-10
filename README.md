@@ -1,7 +1,6 @@
-#[2014 TeleOp & Autonomous code for FTC Cascade Effect Challenge] (https://github.com/3983NHRobotics/2014-FTC)
+#2014 TeleOp & Autonomous code for FTC Cascade Effect Challenge
+##### [View repository on github](https://github.com/3983NHRobotics/2014-FTC)
 <!--- make this h1 thing a link to the github repo - it will serve as the link to here from the highlandsrobo site --->
-
-I moved the autonomous into the same repo as the teleop for simplicity
 
 <hr id="teleop">
 <!--- I needed the id --->
