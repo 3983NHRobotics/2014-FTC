@@ -1,10 +1,9 @@
 //This is a file for functions that are good for everything ever
-/*
-* void moveForward(int mtime, int mpower);
-* void moveBackward(int mtime, int mpower);
-* void turnLeft(int mtime, int mpower);
-* void turnRight(int mtime, int mpower);
-*/
+
+void moveForward(int mtime, int mpower);
+void moveBackward(int mtime, int mpower);
+void turnLeft(int mtime, int mpower);
+void turnRight(int mtime, int mpower);
 
 
 void moveForward(int mtime, int mpower) {

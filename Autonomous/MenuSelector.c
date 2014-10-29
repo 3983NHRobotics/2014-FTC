@@ -1,21 +1,23 @@
-//###################################################################################//
-//
-//							2013-2014 Program Selector Code
-//							 Team 3983 - Highlands Robotics
-//						        	Code by T. Kluge
-//
-//###################################################################################//
+//####################################################################################//
+//																																										//
+//                                 2014-2015 Selector Code														//
+//                         Teams 3983 and 7005 - Highlands Robotics										//
+//                                    Code by T. Kluge																//
+//																																										//
+//####################################################################################//
 
 string menuFirst = "AutCh";
 string placeholder = "PlacHold";
-string progFirst = "fw-fw-L1";
-string progSecond = "fw-fw-L2";
-string progThird = "fw-bw-L1";
-string progFourth = "fw-bw-L2";
-string progFifth = "DoNotUse";
-string progSixth = "AutonDUM";
+string prog[] = {
+				 "Auton_01",
+				 "Auton_02",
+				 "PlacHold",
+				 "PlacHold",
+				 "PlacHold",
+				 "PlacHold"
+				 };
 
-int totalChoices = 5;
+int totalChoices = 6;
 int selectionValue = 1;
 int selectedProgram = -1;
 int PROGID;
@@ -104,62 +106,62 @@ void updateDisplay() {
 void updateSelFirst() {
 
 	nxtDisplayCenteredTextLine (1, "%s", menuFirst);
-	nxtDisplayTextLine (2, "%s <", progFirst);
-	nxtDisplayTextLine (3, "%s", progSecond);
-	nxtDisplayTextLine (4, "%s", progThird);
-	nxtDisplayTextLine (5, "%s", progFourth);
-	nxtDisplayTextLine (6, "%s", progFifth);
-	drawArrow_1();
+	nxtDisplayTextLine (2, "%s <", prog[0]);
+	nxtDisplayTextLine (3, "%s", prog[1]);
+	nxtDisplayTextLine (4, "%s", prog[2]);
+	nxtDisplayTextLine (5, "%s", prog[3]);
+	nxtDisplayTextLine (6, "%s", prog[4]);
+	//drawArrow_1();
 
 }
 
 void updateSelSecond() {
 
 	nxtDisplayCenteredTextLine (1, "%s", menuFirst);
-	nxtDisplayTextLine (2, "%s", progFirst);
-	nxtDisplayTextLine (3, "%s <", progSecond);
-	nxtDisplayTextLine (4, "%s", progThird);
-	nxtDisplayTextLine (5, "%s", progFourth);
-	nxtDisplayTextLine (6, "%s", progFifth);
-	drawArrow_2();
+	nxtDisplayTextLine (2, "%s", prog[0]);
+	nxtDisplayTextLine (3, "%s <", prog[1]);
+	nxtDisplayTextLine (4, "%s", prog[2]);
+	nxtDisplayTextLine (5, "%s", prog[3]);
+	nxtDisplayTextLine (6, "%s", prog[4]);
+	//drawArrow_2();
 
 }
 void updateSelThird() {
 
 	nxtDisplayCenteredTextLine (1, "%s", menuFirst);
-	nxtDisplayTextLine (2, "%s", progFirst);
-	nxtDisplayTextLine (3, "%s", progSecond);
-	nxtDisplayTextLine (4, "%s <", progThird);
-	nxtDisplayTextLine (5, "%s", progFourth);
-	nxtDisplayTextLine (6, "%s", progFifth);
-	drawArrow_3();
+	nxtDisplayTextLine (2, "%s", prog[0]);
+	nxtDisplayTextLine (3, "%s", prog[1]);
+	nxtDisplayTextLine (4, "%s <", prog[2]);
+	nxtDisplayTextLine (5, "%s", prog[3]);
+	nxtDisplayTextLine (6, "%s", prog[4]);
+	//drawArrow_3();
 
 }
 void updateSelFourth() {
 
 	nxtDisplayCenteredTextLine (1, "%s", menuFirst);
-	nxtDisplayTextLine (2, "%s", progFirst);
-	nxtDisplayTextLine (3, "%s", progSecond);
-	nxtDisplayTextLine (4, "%s", progThird);
-	nxtDisplayTextLine (5, "%s <", progFourth);
-	nxtDisplayTextLine (6, "%s", progFifth);
-	drawArrow_4();
+	nxtDisplayTextLine (2, "%s", prog[0]);
+	nxtDisplayTextLine (3, "%s", prog[1]);
+	nxtDisplayTextLine (4, "%s", prog[2]);
+	nxtDisplayTextLine (5, "%s <", prog[3]);
+	nxtDisplayTextLine (6, "%s", prog[4]);
+	//drawArrow_4();
 
 }
 void updateSelFifth() {
 
 	nxtDisplayCenteredTextLine (1, "%s", menuFirst);
-	nxtDisplayTextLine (2, "%s", progFirst);
-	nxtDisplayTextLine (3, "%s", progSecond);
-	nxtDisplayTextLine (4, "%s", progThird);
-	nxtDisplayTextLine (5, "%s", progFourth);
-	nxtDisplayTextLine (6, "%s <", progFifth);
+	nxtDisplayTextLine (2, "%s", prog[0]);
+	nxtDisplayTextLine (3, "%s", prog[1]);
+	nxtDisplayTextLine (4, "%s", prog[2]);
+	nxtDisplayTextLine (5, "%s", prog[3]);
+	nxtDisplayTextLine (6, "%s <", prog[4]);
 	//drawArrow_5();
 
 }
 void updateSelSixth() {
 	nxtDisplayCenteredTextLine (1, "%s", menuFirst);
-	nxtDisplayTextLine (2, "%s <", progSixth);
+	nxtDisplayTextLine (2, "%s <", prog[5]);
 	nxtDisplayTextLine (3, "%s", placeholder);
 	nxtDisplayTextLine (4, "%s", placeholder);
 	nxtDisplayTextLine (5, "%s", placeholder);
@@ -169,25 +171,5 @@ void updateSelSixth() {
 void runSelectedPgm() {
 	//set all control variables in this function to tell the robot what to do in autonomous.
 	//This just makes it a bit easier so that we dont have to use numbers to refer to the code conditions
-
-	switch (selectedProgram) {
-		case 1:
-			PROGID = 1;
-			break;
-		case 2:
-			PROGID = 2;
-			break;
-		case 3:
-			PROGID = 3;
-			break;
-		case 4:
-			PROGID = 4;
-			break;
-		case 5:
-			PROGID = 5;
-			break;
-		case 6:
-			PROGID = 6;
-			break;
-	}
+	PROGID = selectedProgram;
 }
