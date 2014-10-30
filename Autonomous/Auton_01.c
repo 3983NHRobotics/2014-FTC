@@ -27,6 +27,7 @@
 // User Config ---------------
 bool inDebug = true;
 // End Config ----------------
+
 #include "../drivers/JoystickDriver_CustomNoSplash.c"
 #include "MenuSelector.c"
 #include "../GlobalFunctions/debug.h"
@@ -34,38 +35,52 @@ bool inDebug = true;
 
 //variable initialization
 
-bool AUTON_1_NAME = false;
-bool AUTON_2_NAME = false;
+bool FORWARD_LEFT_RIGHT = false;
+bool FORWARD_RIGHT_LEFT = false;
 
 //Main Program
 
 task main() {
-	//dummy autonomous
-
-	moveForward(3000, 100);
-	turnLeft(2000, 100);
-	moveForward(2000, 100);
-	turnRight(1000, 100);
 
 	chooseProgram(); //start the program chooser
 
 	switch (PROGID) { //handle the results from the program chooser
 		case 1:
-			AUTON_1_NAME = true;
-			debug("Auton prog set to AUTON_1_NAME");
+			FORWARD_LEFT_RIGHT = true;
+			debug("Auton prog set to FORWARD_LEFT_RIGHT");
 			break;
 		case 2:
-			AUTON_2_NAME = true;
-			debug("Auton prog set to AUTON_2_NAME");
+			FORWARD_RIGHT_LEFT = true;
+			debug("Auton prog set to FORWARD_RIGHT_LEFT");
+			break;
+		case 3:
+			debug_clear();
+			debug("Cleared Debug Stream");
 			break;
 		default:
-			AUTON_1_NAME = true;
-			debug("Auton prog defaulted to AUTON_1_NAME");
+			FORWARD_LEFT_RIGHT = true;
+			debug("Auton prog defaulted to FORWARD_LEFT_RIGHT");
 			PlaySoundFile("Woops.rso");
 			break;
-	}
+	} //end switch(PROGID)
 
-	while (true) { //do the thing
-		break;
-	}
-}
+	moveForward(3000, 100);
+	if (FORWARD_LEFT_RIGHT)
+		turnLeft(2000, 100);
+	else if (FORWARD_RIGHT_LEFT)
+		turnRight(2000, 100);
+	else
+		wait1Msec(1000);
+
+	moveForward(2000, 100);
+
+	if (FORWARD_LEFT_RIGHT)
+		turnRight(2000, 100);
+	else if (FORWARD_RIGHT_LEFT)
+		turnLeft(2000, 100);
+	else
+		wait1Msec(1000);
+
+	moveBackward(3000, 100);
+
+} //end task main

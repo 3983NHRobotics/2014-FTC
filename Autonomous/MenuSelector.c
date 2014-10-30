@@ -6,12 +6,12 @@
 //																																										//
 //####################################################################################//
 
-string menuFirst = "AutCh";
+string menuFirst = "Auton Chooser";
 string placeholder = "PlacHold";
 string prog[] = {
 				 "Auton_01",
 				 "Auton_02",
-				 "PlacHold",
+				 "ClearStr",
 				 "PlacHold",
 				 "PlacHold",
 				 "PlacHold"
