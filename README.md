@@ -10,22 +10,27 @@
 ###Test:
 ```
 task main() {
-  int inputdata;
-  HTPBsetupIO(HTPB, 0x3F);//setup IO connection to "HTPB" at 0x3F bin
 
-  while(true) {
-    inputdata = HTPBreadADC(HTPB, 0, 10);
-    eraseDisplay();
-    nxtDisplayTextLine(1, "%d", inputdata);
+	StartTask(getHeading); ///start the compass loop
+	StartTask(getIR); //start the IR loop
 
-    if(inputdata < 512)
-      HTPBwriteIO(HTPB, 0x00); //write value of 0 (off) to protoboard
-    else
-      HTPBwriteIO(HTPB, 0x01); //write value of 1 (on) to protoboard
+	waitForStart();
 
-    wait1Msec(50);
-  }
-}
+	moveForward(1500, 100);
+	turnDeg("right", 120, 100);
+
+	do {
+		searchForLine(1000); //move forward until it finds a line on the ground
+		turnDeg("left", 120, 100); //turn left 120deg (because the base is a hexagon and it needs to check 3 sides)
+		if (irExists) { //if it sees a beacon after turning,
+			beaconIsFound = true; //end the search loop.
+		}
+		counter++; //add 1 to counter because it only needs to check 3 sides (there are 2 beacons)
+	} while (!beaconIsFound && counter < 3);
+
+	//knock_stand_down()
+
+} //end task main
 ```
 
 <hr id="autonomous">
