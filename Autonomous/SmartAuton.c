@@ -1,4 +1,6 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTServo,  HTMotor)
+#pragma config(Sensor, S2,     GYRO,           sensorI2CHiTechnicGyro)
+#pragma config(Sensor, S3,     HTIRS2,         sensorHiTechnicIRSeeker1200)
 #pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop, encoder)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
@@ -30,7 +32,6 @@ bool inDebug = true;
 
 #include "../drivers/JoystickDriver_CustomNoSplash.c"
 #include "MenuSelector.c"
-#include "../GlobalFunctions///debug.h"
 #include "../GlobalFunctions/GlobalFunctions.c"
 #include "../Drivers/hitechnic-sensormux.h"
 #include "../Drivers/lego-light.h"
@@ -39,7 +40,6 @@ bool inDebug = true;
 
 //variable initialization
 
-string msg;
 int counter = 0;
 int curHeading = 0, h = 0; //try to get this from -360 to +360
 int light = 50;
@@ -131,8 +131,10 @@ task main() {
 
 	waitForStart();
 
-	moveForward(1500, 100);
-	turnDeg("right", 120, 100);
+	moveForward(3000, 100); //move forward off ramp
+	turnDeg("left", 90, 100); //turn left towards center of field
+	moveForward(1500, 100); //move towards center of field
+	turnDeg("right", 120, 100); //turn 120deg right to align with hexagon in center
 
 	do {
 		searchForLine(1000); //move forward until it finds a line on the ground
@@ -153,7 +155,7 @@ void turnDeg(const string dir, int deg, int power) {
 	resetHeading();
 	//when told to turn, turn until robot is facing correct direction
 	if (dir == "left") {
-		do {
+		do { //these could probably be normal while loops
 			turnLeftCont(power);
 		} while (curHeading > deg);
 	} else if (dir == "right") {
@@ -189,7 +191,7 @@ void resetHeading() {
 }
 
 void searchForLine(int power) {
-	do {
+	do { //this could also be a normal while loop
 		moveForwardConst(power);
 	} while (legoLS < light);
 	stopMotors();

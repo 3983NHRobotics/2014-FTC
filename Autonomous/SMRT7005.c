@@ -132,8 +132,10 @@ task main() {
 
 	waitForStart();
 
-	moveForward(1500, 100);
-	turnDeg("right", 120, 100);
+	moveForward(3000, 100); //move forward off ramp
+	turnDeg("left", 90, 100); //turn left towards center of field
+	moveForward(1500, 100); //move towards center of field
+	turnDeg("right", 120, 100); //turn 120deg right to align with hexagon in center
 
 	do {
 		searchForLine(1000); //move forward until it finds a line on the ground
