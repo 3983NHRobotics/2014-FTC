@@ -2,14 +2,14 @@
 #pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop, encoder)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
-#pragma config(Motor,  mtr_S1_C1_1,     motorLeft,     tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C1_2,     motorRight,    tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C2_1,     motorSpinner,  tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C2_2,     motorLauncher, tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_1,     motorLift,     tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C1_2,     motorSweeper,    tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_1,     motorLeft,  tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_2,     motorRight, tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_1,     motorH,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_2,     motorI,        tmotorTetrix, openLoop)
-#pragma config(Servo,  srvo_S1_C3_1,    servoLeft,            tServoStandard)
-#pragma config(Servo,  srvo_S1_C3_2,    servoRight,           tServoStandard)
+#pragma config(Servo,  srvo_S1_C3_1,    servoBucket,            tServoStandard)
+#pragma config(Servo,  srvo_S1_C3_2,    servo2,           tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_5,    servo5,               tServoNone)
@@ -34,16 +34,13 @@ bool inDebug = true;
 bool reversedControl = false;
 bool canSwitchDriveSpeed = true;
 
-int servoVal_left_up = 135,
-		servoVal_left_down = 0;
-int servoVal_right_up = 109,
-		servoVal_right_down = 240;
+int servoVal_up = 135,
+		servoVal_down = 0;
 
 task main() {
 
 //Initialize servos
-servo[srvo_S1_C3_1] = servoVal_left_up;
-servo[srvo_S1_C3_2] = servoVal_right_up;
+servo[servoBucket] = servoVal_down;
 //end init
 	waitForStart();
 	while(true) {
@@ -86,28 +83,25 @@ servo[srvo_S1_C3_2] = servoVal_right_up;
 		}
 		// -------------------------------	End Drive Code	-------------------------------
 		if (joy2Btn(1)) {
-			motor[motorLauncher] = -100;
+			motor[motorLift] = -100;
 		} else if (joy2Btn(4)) {
-			motor[motorLauncher] = 100;
+			motor[motorLift] = 100;
 		} else {
-			motor[motorLauncher] = 0;
+			motor[motorLift] = 0;
 		}
 
 		if (joy2Btn(2))
-			motor[motorSpinner] = -100;
+			motor[motorSweeper] = -100;
 		else if (joy2Btn(3))
-			motor[motorSpinner] = 100;
+			motor[motorSweeper] = 100;
 		else
-			motor[motorSpinner] = 0;
+			motor[motorSweeper] = 0;
 
 		if (joy2Btn(6)) {
-			//servo[servoLeft] = servoVal_open;
-			servo[srvo_S1_C3_1] = servoVal_left_up;
-			servo[srvo_S1_C3_2] = servoVal_right_up;
+			servo[servoBucket] = servoVal_left_up;
 		}
 		if (joy2Btn(8)) {
-			servo[srvo_S1_C3_1] = servoVal_left_down;
-			servo[srvo_S1_C3_2] = servoVal_right_down;
+			servo[servoBucket] = servoVal_left_down;
 		}
 	} //while true
 } //task main
