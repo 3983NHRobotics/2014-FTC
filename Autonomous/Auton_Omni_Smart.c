@@ -20,7 +20,7 @@
 
 //####################################################################################//
 //																																										//
-//                                 2014-2015 Autonomous Code													//
+//                             2014-2015 Smart Autonomous Code												//
 //                         Teams 3983 and 7005 - Highlands Robotics										//
 //                                    Code by T. Kluge																//
 //																																										//
@@ -32,7 +32,7 @@ bool inDebug = true;
 
 #include "../drivers/JoystickDriver_CustomNoSplash.c"
 #include "../Includes/MenuSelector.h"
-#include "../GlobalFunctions/GlobalFunctions.c"
+#include "../GlobalFunctions/OmniwheelFunctions.h"
 #include "../Drivers/hitechnic-sensormux.h"
 #include "../Drivers/lego-light.h"
 #include "../Drivers/hitechnic-irseeker-v2.h"
