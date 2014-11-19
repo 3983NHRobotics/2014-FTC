@@ -29,7 +29,7 @@ bool inDebug = true;
 // End Config ----------------
 
 #include "JoystickDriver.c"
-#include "GlobalFunctions/debug.h"
+#include "GlobalFunctions/OmniwheelFunctions.h"
 
 bool sloMo = false;
 
