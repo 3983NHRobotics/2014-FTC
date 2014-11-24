@@ -114,7 +114,7 @@ task getIR() {
 		//set understandable values
 		irVal = acS3; //directly in front of the sensor
 
-		if (acS3 > irPeak) {
+		if (irVal > irPeak) {
 			irExists = true;
 		} else {
 			irExists = false;
