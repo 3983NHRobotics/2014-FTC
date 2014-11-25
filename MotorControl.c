@@ -61,6 +61,7 @@ int motorOffset = -1; //because the motor array also includes the 3 NXT motors
 
 bool progSelected = false;
 bool runningMotor = false;
+bool dirTextSet = false;
 
 void updateDisplay();
 void updateSelFirst();
@@ -74,8 +75,11 @@ void updateSelEighth();
 int chooseMotor();
 void stopAllMotors();
 void runMotor();
+void displaySplash();
 
 task main() {
+	disableDiagnosticsDisplay();
+	displaySplash();
 	while(true) {
 		progSelected = false;
 		//selectionValue = 1;
@@ -95,35 +99,38 @@ task main() {
 
 void runMotor() {
 	runningMotor = true;
-		nxtDisplayCenteredTextLine (1, "Motor: %d", motorToControl);
-		nxtDisplayCenteredTextLine(2, "Orange btn exit");
+		//nxtDisplayCenteredTextLine (1, "Motor: %d", motorToControl);
+		nxtDisplayCenteredTextLine(1, "Orange btn exit");
+		nxtDisplayCenteredTextLine(2, "%s", mtc);
 
 		while (runningMotor) {
 		//Right arrow
 			while (nNxtButtonPressed == 1) {
-				nxtDisplayTextLine(3, "Running %s:", motorType);
-				nxtDisplayTextLine(4, "%s", mtc);
-				nxtDisplayTextLine(5, "at 100p");
+				if(!dirTextSet) {
+					nxtDisplayCenteredTextLine(4, "Running %s", motorType);
+					nxtDisplayCenteredTextLine(5, "> > >");
+				}
+				dirTextSet = true;
 				if (motorType == "motor") {
-		 			motor[motorToControl + motorOffset] = -100;
+		 			motor[motorToControl + motorOffset] = 100;
 		 		} else {
-		 			servo[motorToControl - (totalMotors)] = ServoValue[motorToControl - (totalMotors)] - 1;
-		 			//servo[mtc] = ServoValue[mtc] - 1;
+		 			servo[motorToControl - (totalMotors + 1)] = ServoValue[motorToControl - (totalMotors + 1)] + 1;
 		 		}
 		 		if (nNxtButtonPressed == -1) {
 					break;
 				}
 			}
 			while (nNxtButtonPressed == 2) {
-				nxtDisplayTextLine(3, "Running %s", motorType);
-				nxtDisplayTextLine(4, "%s", mtc);
-				nxtDisplayTextLine(5, "at 100p");
+				if (!dirTextSet) {
+					nxtDisplayCenteredTextLine(4, "Running %s", motorType);
+					nxtDisplayCenteredTextLine(5, " < < <");
+				}
+				dirTextSet = true;
 				if (motorType == "motor") {
-		 			motor[motorToControl + motorOffset] = 100;
+		 			motor[motorToControl + motorOffset] = -100;
 		 		} else {
 		 		nxtDisplayTextLine(6, "%d", motorToControl - (totalMotors));
-		 			servo[motorToControl - (totalMotors)] = ServoValue[motorToControl - (totalMotors)] + 1;
-		 			//servo[mtc] = ServoValue[mtc] + 1;
+		 			servo[motorToControl - (totalMotors + 1)] = ServoValue[motorToControl - (totalMotors + 1)] - 1;
 		 		}
 		 		if (nNxtButtonPressed == -1) {
 					break;
@@ -135,7 +142,7 @@ void runMotor() {
 			}
 			if (nNxtButtonPressed == -1) {
 				stopAllMotors();
-				nxtDisplayTextLine(3, "");
+				dirTextSet = false;
 				nxtDisplayTextLine(4, "");
 				nxtDisplayTextLine(5, "");
 			}
@@ -155,7 +162,6 @@ void stopAllMotors() {
 }
 
 int chooseMotor() {
-	disableDiagnosticsDisplay();
 	//Initialize the display with the program choices
 	updateDisplay();
 	wait1Msec(50);
@@ -310,4 +316,10 @@ void updateSelEighth() {
 	nxtDisplayTextLine (5, "%s", placeholder);
 	nxtDisplayTextLine (6, "%s", placeholder);
 
+}
+void displaySplash() {
+	nxtDisplayCenteredTextLine(1, "Motor Control");
+	nxtDisplayCenteredTextLine(2, "by T. Kluge");
+	nxtDisplayCenteredTextLine(4, ":)");
+	wait1Msec(2000);
 }
