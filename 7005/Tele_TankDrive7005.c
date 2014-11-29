@@ -3,8 +3,8 @@
 #pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop, encoder)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
-#pragma config(Motor,  mtr_S1_C1_1,     motorLeft,     tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C1_2,     motorRight,    tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_1,     motorLeft,     tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_2,     motorRight,    tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C2_1,     motorSpinner,  tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     motorLauncher, tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C3_1,     motorH,        tmotorTetrix, openLoop)
@@ -30,7 +30,7 @@ bool inDebug = true;
 // End Config ----------------
 
 #include "JoystickDriver.c"
-#include "GlobalFunctions/debug.h"
+#include "../GlobalFunctions/debug.h"
 
 bool reversedControl = false;
 bool canSwitchDriveSpeed = true;

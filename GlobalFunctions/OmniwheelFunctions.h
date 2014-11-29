@@ -2,8 +2,12 @@
 
 void moveForward(int mtime, int mpower);
 void moveBackward(int mtime, int mpower);
+void moveLeft(int mtime, int mpower);
+void moveRight(int mtime, int mpower);
 void moveForwardConst(int mpower);
 void moveBackwardConst(int mpower);
+void moveRightConst(int mpower);
+void moveLeftConst(int mpower);
 void turnLeft(int mtime, int mpower);
 void turnRight(int mtime, int mpower);
 void turnLeftCont(int mpower);
@@ -16,10 +20,7 @@ void moveForward(int mtime, int mpower) {
 	motor[motorBackRight] = mpower;
 	motor[motorBackLeft] = -1 * mpower;
 	wait1Msec(mtime);
-	motor[motorFrontLeft] = 0;
-	motor[motorFrontRight] = 0;
-	motor[motorBackRight] = 0;
-	motor[motorBackLeft] = 0;
+	stopMotors();
 }
 
 void moveBackward(int mtime, int mpower) {
@@ -28,12 +29,24 @@ void moveBackward(int mtime, int mpower) {
 	motor[motorBackRight] = -1 * mpower;
 	motor[motorBackLeft] = mpower;
 	wait1Msec(mtime);
-	motor[motorFrontLeft] = 0;
-	motor[motorFrontRight] = 0;
-	motor[motorBackRight] = 0;
-	motor[motorBackLeft] = 0;
+	stopMotors();
 }
-
+void moveRight(int mtime, int mpower) {
+	motor[motorFrontLeft] = -1 * mpower;
+	motor[motorFrontRight] = -1 * mpower;
+	motor[motorBackRight] = mpower;
+	motor[motorBackLeft] = mpower;
+	wait1Msec(mtime);
+	stopMotors();
+}
+void moveLeft(int mtime, int mpower) {
+	motor[motorFrontLeft] = mpower;
+	motor[motorFrontRight] = mpower;
+	motor[motorBackRight] = -1 * mpower;
+	motor[motorBackLeft] = -1 * mpower;
+	wait1Msec(mtime);
+	stopMotors();
+}
 void moveForwardConst(int mpower) {
 	motor[motorFrontLeft] = -1 * mpower;
 	motor[motorFrontRight] = mpower;
@@ -47,7 +60,18 @@ void moveBackwardConst(int mpower) {
 	motor[motorBackRight] = -1 * mpower;
 	motor[motorBackLeft] = mpower;
 }
-
+void moveRightConst(int mpower) {
+	motor[motorFrontLeft] = -1 * mpower;
+	motor[motorFrontRight] = -1 * mpower;
+	motor[motorBackRight] = mpower;
+	motor[motorBackLeft] = mpower;
+}
+void moveLeftConst(int mpower) {
+	motor[motorFrontLeft] = mpower;
+	motor[motorFrontRight] = mpower;
+	motor[motorBackRight] = -1 * mpower;
+	motor[motorBackLeft] = -1 * mpower;
+}
 void turnLeft(int mtime, int mpower) {
 	motor[motorFrontLeft] = mpower;
 	motor[motorFrontRight] = mpower;
