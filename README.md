@@ -7,7 +7,17 @@
 
 ##Tele0p
 
-###Test:
+The teleop code for this robot went from being a tank drive type robot to an omnidirectional platform capable of moving in all 4 directions as well as spinning in place. Controller 1 controls the robot's movement - left joystick controls straight motion, right joystick controls the rotation. Controller 2 is in charge of all of the other motors and servos on the robot. Both controllers will have the ability to use any sweeper mechanish on the robot, because it can be easier for one person to coordinate the sweeping with the movement of the robot.
+
+Controller 1 can press the right joystick to toggle slomo mode, where the drive motors run at 16% power so that the robot is easier to control.
+
+
+<hr id="autonomous">
+
+##Autonomous
+
+This year's autonomous is finished, but entirely untested. This is because the actual robot has been taken apart and reassembled 3 times. It is simplified from last year's, using more methods instead of writing out stuff many times.
+
 ```
 task main() {
 
@@ -32,9 +42,3 @@ task main() {
 
 } //end task main
 ```
-
-<hr id="autonomous">
-
-##Autonomous
-
-> Autonomous wheeeeee
