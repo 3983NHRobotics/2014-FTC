@@ -5,10 +5,10 @@
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  mtr_S1_C1_1,     motorLeft,     tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C1_2,     motorRight,    tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C2_1,     motorF1,       tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C2_2,     motorF2,       tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_1,     motor5,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_2,     motor6,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_1,     motorLift,     tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_2,     motorLift,     tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_1,     motorBelt,     tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_2,     motorF2,       tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C3_1,    srvoF1,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    srvoF2,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_3,    servo3,               tServoNone)
@@ -84,19 +84,19 @@ task main() {
 
 		// -------------------------------	End Drive Code	-------------------------------
 		if (joy2Btn(1)) {
-			motor[motorF1] = -100;
+			motor[motorLift] = -100;
 		} else if (joy2Btn(4)) {
-			motor[motorF1] = 100;
+			motor[motorLift] = 100;
 		} else {
-			motor[motorF1] = 0;
+			motor[motorLift] = 0;
 		}
 
 		if (joy2Btn(2))
-			motor[motorF2] = -100;
+			motor[motorBelt] = -100;
 		else if (joy2Btn(3))
-			motor[motorF2] = 100;
+			motor[motorBelt] = 100;
 		else
-			motor[motorF2] = 0;
+			motor[motorBelt] = 0;
 
 		if (joy2Btn(6)) {
 			servo[srvoF1] = 0;
