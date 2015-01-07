@@ -34,6 +34,7 @@ bool inDebug = true;
 
 bool canSloMo = false, sloMo = false;
 bool canSwitchDriveSpeed = true;
+int srvoVal[] = {0,50}; //add more stop positions as needed
 
 task main() {
 
@@ -99,12 +100,12 @@ task main() {
 			motor[motorBelt] = 0;
 
 		if (joy2Btn(6)) {
-			servo[srvoF1] = 0;
-			servo[srvoF2] = 0;
+			servo[srvoF1] = srvoVal[0];
+			servo[srvoF2] = srvoVal[0];
 		}
 		if (joy2Btn(8)) {
-			servo[srvoF1] = 0;
-			servo[srvoF2] = 0;
+			servo[srvoF1] = srvoVal[1];
+			servo[srvoF2] = srvoVal[1];
 		}
 	} //while true
 } //task main

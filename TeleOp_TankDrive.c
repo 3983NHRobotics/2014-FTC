@@ -34,6 +34,7 @@ bool inDebug = true;
 
 bool canSloMo = false, sloMo = false;
 bool canSwitchDriveSpeed = true;
+int srvoVal[] = {0,50};
 
 task main() {
 
@@ -83,6 +84,8 @@ task main() {
 		}
 
 		// -------------------------------	End Drive Code	-------------------------------
+
+		//write spinup code to avoid possible strain on motors
 		if (joy2Btn(1)) {
 			motor[motorLaunch] = -100;
 		} else if (joy2Btn(4)) {
@@ -99,12 +102,12 @@ task main() {
 		//	motor[motorF2] = 0;
 
 		if (joy2Btn(6)) {
-			servo[srvoF1] = 0;
-			servo[srvoF2] = 0;
+			servo[srvoF1] = srvoVal[0];
+			servo[srvoF2] = srvoVal[0];
 		}
 		if (joy2Btn(8)) {
-			servo[srvoF1] = 0;
-			servo[srvoF2] = 0;
+			servo[srvoF1] = srvoVal[1];
+			servo[srvoF2] = srvoVal[1];
 		}
 	} //while true
 } //task main
