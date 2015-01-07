@@ -1,12 +1,14 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  HTServo)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S2,     Sonar,          sensorSONAR)
+#pragma config(Sensor, S3,     Ir,             sensorHiTechnicIRSeeker1200)
 #pragma config(Motor,  mtr_S1_C1_1,     motorLeft,     tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C1_2,     motorRight,    tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_1,     motorBelt,     tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     motorLift,     tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C3_1,     motorSweeper,  tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C3_2,     motorUndef,    tmotorTetrix, openLoop)
-#pragma config(Servo,  srvo_S1_C4_1,    servo1,               tServoNone)
+#pragma config(Servo,  srvo_S1_C4_1,    servoClamp,           tServoNone)
 #pragma config(Servo,  srvo_S1_C4_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S1_C4_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S1_C4_4,    servo4,               tServoNone)
@@ -18,60 +20,51 @@
 
 int bucketOpenVal = 110;
 int bucketCloseVal = 12;
+void stopAllMotors();
 
 task main()
- {
+{
 	PlaySound(soundBeepBeep);
 	waitForStart();
 	PlaySound(soundUpwardTones);
-	while(true)
+
+	while (true) {
+		motor[motorLeft] = 100;
+		motor[motorRight] = 100;
+
+		if(SensorValue[Sonar] <= 5){ //dist > 5
+			motor[motorLift] = 100;
+			wait1Msec(2000);
+			stopAllMotors();
+			motor[motorLift] = 0;
+		} else if(SensorValue[Sonar] > 5) { //dist <= 5
+			motor[motorLift] = 0;
+		}
+
+		wait1Msec(100); //anti-jitter
+	}
+
+}
+
+void stopAllMotors() {
+	motor[0] = 0;
+	motor[1] = 0;
+}
+
+
+/* changes by ali for the IR sensor
+added an Ir sensor (Ir)*/
+
+	if(SensorValue[Ir] <= 4)
 	{
+		motor[motorLeft]=-50;
+		motor[motorRight]=50;
+		wait1Msec(2000);
+		nxtDisplayString("hello");
 
-		bFloatDuringInactiveMotorPWM = false;
-		getJoystickSettings(joystick);
-		//Prevents random movement on the y axis
-		if(joystick.joy1_y1 < 10 && joystick.joy1_y1 > -10) {
-			joystick.joy1_y1 = 0;
-		}
-		//Prevents random movement on the x axis
-		if(joystick.joy1_x2 < -10 && joystick.joy1_x2 > 10) {
-			joystick.joy1_x2 = 0;
-		}
 
-		//Drive Control
-		motor[motorLeft] = (joystick.joy1_y1);
-		motor[motorRight] = (joystick.joy1_y2);
-
-		if(joy1Btn(7) || joy2Btn(7)) {
-			motor[motorSweeper] = 70;
-			} else if (joy1Btn(5) || joy2Btn(5)) {
-			motor[motorSweeper] = -70;
-			} else {
-			motor[motorSweeper] = 0;
-		}
-
-		if (joy2Btn(8)) {
-				motor[motorBelt] = 100;
-				} else if (joy2Btn(6)) {
-				motor[motorBelt] = -100;
-				} else {
-				motor[motorBelt] = 0;
-			}
-
-		if(joy2Btn(4)) {
-				motor[motorLift] = 100;
-				} else if (joy2Btn(1)) {
-				motor[motorLift] = -100;
-				} else {
-				motor[motorLift] = 0;
-			}
-
-		if (joy2Btn(2)) {
-				servo[servo1] = bucketOpenVal;
-				}
-		if (joy2Btn(3)) {
-				servo[servo1] = bucketCloseVal;
-				}
-
-	}//end of while loop
-}//end of task
+		motor[motorLeft]= 100;
+		motor[motorRight]= 100;
+		wait1Msec(10000);
+		nxtDisplayString("hola");
+	}

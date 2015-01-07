@@ -1,15 +1,16 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTServo,  HTMotor)
+#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop, encoder)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
-#pragma config(Motor,  mtr_S1_C1_1,     motorLift,     tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C1_2,     motorSweeper,    tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C2_1,     motorLeft,  tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C2_2,     motorRight, tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_1,     motorH,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_2,     motorI,        tmotorTetrix, openLoop)
-#pragma config(Servo,  srvo_S1_C3_1,    servoBucket,            tServoStandard)
-#pragma config(Servo,  srvo_S1_C3_2,    servo2,           tServoStandard)
+#pragma config(Motor,  mtr_S1_C1_1,     motorLeft,     tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_2,     motorRight,    tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C2_1,     motorLeft,     tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_2,     motorRight,    tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C4_1,     motorF1,       tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_2,     motorF2,       tmotorTetrix, openLoop)
+#pragma config(Servo,  srvo_S1_C3_1,    srvoF1,               tServoStandard)
+#pragma config(Servo,  srvo_S1_C3_2,    srvoF2,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_5,    servo5,               tServoNone)
@@ -29,79 +30,81 @@ bool inDebug = true;
 // End Config ----------------
 
 #include "JoystickDriver.c"
-#include "GlobalFunctions/debug.h"
+//#include "../GlobalFunctions/debug.h"
 
-bool reversedControl = false;
+bool canSloMo = false, sloMo = false;
 bool canSwitchDriveSpeed = true;
-
-int servoVal_up = 135,
-		servoVal_down = 0;
 
 task main() {
 
-//Initialize servos
-servo[servoBucket] = servoVal_down;
-//end init
 	waitForStart();
 	while(true) {
 
 		bFloatDuringInactiveMotorPWM = false;
 		getJoystickSettings(joystick);
 
-		//CONTROLLER 1 JOYSTICK 1 - Drive (Forward/Backward)
 		if((joystick.joy1_y1 < 10 && joystick.joy1_y1 > -10) && (joystick.joy1_x1 < 10 && joystick.joy1_x1 > -10))
 		{
 			joystick.joy1_y1 = 0;
 			joystick.joy1_x1 = 0;
 		}
-		//CONTROLLER 1 JOYSTICK 2 - Drive (Turning)
 		if((joystick.joy1_x2 < 10 && joystick.joy1_x2 > -10) && (joystick.joy1_y2 < 10 && joystick.joy1_y2 > -10))
 		{
 			joystick.joy1_x2 = 0;
 			joystick.joy1_y2 = 0;
 		}
 
-		if (!reversedControl) {
+		if (!sloMo) {
 			motor[motorLeft] = (joystick.joy1_y1 + joystick.joy1_x2);
 			motor[motorRight] = (joystick.joy1_y1 - joystick.joy1_x2);
 		} else {
 			motor[motorLeft] = -(joystick.joy1_y1 - joystick.joy1_x2);
 			motor[motorRight] = -(joystick.joy1_y1 + joystick.joy1_x2);
 		}
-		if (!joy1Btn(1)) { //see if this actually works
-			if (!reversedControl) {
-				if (joy1Btn(1)) {
-					reversedControl = true;
-					canSwitchDriveSpeed = false;
+		if (canSloMo) {
+			if (!sloMo) {
+				if (joy1Btn(12)) {
+					sloMo = true;
+					canSloMo = false;
+					PlayImmediateTone(400, 10);
 				}
-				} else {
-				if (joy1Btn(1)) {
-					reversedControl = false;
-					canSwitchDriveSpeed = false;
+			} else {
+				if (joy1Btn(12)) {
+					sloMo = false;
+					canSloMo = false;
+					PlayImmediateTone(600, 10);
 				}
 			}
 		}
+		if (!canSloMo) {
+			if (!joy1Btn(12)) {
+				canSloMo = true;
+			}
+		}
+
 		// -------------------------------	End Drive Code	-------------------------------
 		if (joy2Btn(1)) {
-			motor[motorLift] = -100;
+			motor[motorF1] = -100;
 		} else if (joy2Btn(4)) {
-			motor[motorLift] = 100;
+			motor[motorF1] = 100;
 		} else {
-			motor[motorLift] = 0;
+			motor[motorF1] = 0;
 		}
 
 		if (joy2Btn(2))
-			motor[motorSweeper] = -100;
+			motor[motorF2] = -100;
 		else if (joy2Btn(3))
-			motor[motorSweeper] = 100;
+			motor[motorF2] = 100;
 		else
-			motor[motorSweeper] = 0;
+			motor[motorF2] = 0;
 
 		if (joy2Btn(6)) {
-			servo[servoBucket] = servoVal_left_up;
+			servo[srvoF1] = 0;
+			servo[srvoF2] = 0;
 		}
 		if (joy2Btn(8)) {
-			servo[servoBucket] = servoVal_left_down;
+			servo[srvoF1] = 0;
+			servo[srvoF2] = 0;
 		}
 	} //while true
 } //task main
