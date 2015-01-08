@@ -19,7 +19,7 @@
 
 //####################################################################################//
 //																																										//
-//                                 2014-2015 TeleOp Code															//
+//                                2014-2015 3983 TeleOp Code													//
 //                         Teams 3983 and 7005 - Highlands Robotics										//
 //                                    Code by T. Kluge																//
 //																																										//
@@ -32,7 +32,7 @@ bool inDebug = true;
 #include "JoystickDriver.c"
 //#include "../GlobalFunctions/debug.h"
 
-bool canSloMo = false, sloMo = false;
+bool canSloMo = true, sloMo = false, revDir = false, canRevDir = true;
 bool canSwitchDriveSpeed = true;
 int srvoVal[] = {0,50};
 
@@ -55,12 +55,22 @@ task main() {
 			joystick.joy1_y2 = 0;
 		}
 
-		if (!sloMo) {
-			motor[motorLeft] = (joystick.joy1_y1 + joystick.joy1_x2);
-			motor[motorRight] = (joystick.joy1_y1 - joystick.joy1_x2);
+		if (!revDir) {
+			if (!sloMo) {
+				motor[motorLeft] = (joystick.joy1_y1 + joystick.joy1_x2);
+				motor[motorRight] = (joystick.joy1_y1 - joystick.joy1_x2);
+			} else {
+				motor[motorLeft] = 0.16 * (joystick.joy1_y1 + joystick.joy1_x2);
+				motor[motorRight] = 0.16 * (joystick.joy1_y1 - joystick.joy1_x2);
+			}
 		} else {
-			motor[motorLeft] = -(joystick.joy1_y1 - joystick.joy1_x2);
-			motor[motorRight] = -(joystick.joy1_y1 + joystick.joy1_x2);
+			if (!sloMo) {
+				motor[motorLeft] = -(joystick.joy1_y1 + joystick.joy1_x2);
+				motor[motorRight] = -(joystick.joy1_y1 - joystick.joy1_x2);
+			} else {
+				motor[motorLeft] = -0.16 * (joystick.joy1_y1 + joystick.joy1_x2);
+				motor[motorRight] = -0.16 * (joystick.joy1_y1 - joystick.joy1_x2);
+			}
 		}
 		if (canSloMo) {
 			if (!sloMo) {
@@ -80,6 +90,26 @@ task main() {
 		if (!canSloMo) {
 			if (!joy1Btn(12)) {
 				canSloMo = true;
+			}
+		}
+		if (canRevDir) {
+			if (!revDir) {
+				if (joy1Btn(11)) {
+					revDir = true;
+					canRevDir = false;
+					PlayImmediateTone(300, 10);
+				}
+			} else {
+				if (joy1Btn(11)) {
+					revDir = false;
+					canRevDir = false;
+					PlayImmediateTone(800, 10);
+				}
+			}
+		}
+		if (!canRevDir) {
+			if (!joy1Btn(11)) {
+				canRevDir = true;
 			}
 		}
 
