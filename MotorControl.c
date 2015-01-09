@@ -321,5 +321,5 @@ void displaySplash() {
 	nxtDisplayCenteredTextLine(1, "Motor Control");
 	nxtDisplayCenteredTextLine(2, "by T. Kluge");
 	nxtDisplayCenteredTextLine(4, ":)");
-	wait1Msec(2000);
+	wait1Msec(500);
 }
