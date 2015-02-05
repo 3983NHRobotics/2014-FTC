@@ -42,12 +42,12 @@ task main() {
 
 
 			int moveTime[] = {
-			  3600, //move forward
-			  1000, //back up
+			  1800, //move forward
+			  2000, //back up
 			  1800, //turn left
 			  2000, //go forward
 			  500, //turn left more
-			  1600, //go forward
+			  1400, //go forward
 			  1000, //back up
 			  2000, //turn 180
 			  700, //go forward
@@ -55,118 +55,48 @@ task main() {
 			  0
 			  };
 			int slowDelay = 1000;
-			int liftTime = 450;
-			int armTime = 500;
+			int liftTime = 380;
+			int armTime = 300;
 
-			//raise lock
-			motor[motorLock] = 30;
-			wait1Msec(liftTime + 220);
-			motor[motorLock] = 0;
 			//move forward and stop
 	    motor[motorBack1] = -100;
 			motor[motorBack2] = -100;
 			motor[motorFront1] = -100;
 			motor[motorFront2] = -100;
-			wait1Msec(moveTime[0] - slowDelay);
+			wait1Msec((moveTime[0] - slowDelay) / 2);
+			//open arm
+			motor[motorArm] = 15;
+			wait1Msec(armTime + 700);
+			motor[motorArm] = 0;
+			wait1Msec(((moveTime[0] - slowDelay) / 2) - armTime + 700);
 			motor[motorBack1] = -20;
 			motor[motorBack2] = -20;
 			motor[motorFront1] = -20;
 			motor[motorFront2] = -20;
 			wait1Msec(slowDelay + 500);
-			//lower lock
-			motor[motorLock] = -15;
-			wait1Msec(liftTime);
-			motor[motorLock] = 0;
 			//stop forwards
 			motor[motorBack1] = -0;
 			motor[motorBack2] = -0;
 			motor[motorFront1] = -0;
 			motor[motorFront2] = -0;
 			wait1Msec(500);
+			//close arm
+			motor[motorArm] = -15;
+			wait1Msec(armTime);
 			//move backwards
 			motor[motorBack1] = 100;
 			motor[motorBack2] = 100;
 			motor[motorFront1] = 100;
 			motor[motorFront2] = 100;
-			wait1Msec(moveTime[1]);
+			wait1Msec(armTime);
+			motor[motorArm] = 0;
+			wait1Msec(moveTime[1] - 200);
 			motor[motorBack1] = -0;
 			motor[motorBack2] = -0;
 			motor[motorFront1] = -0;
 			motor[motorFront2] = -0;
-			//turn left
-			motor[motorBack1] = 100;
-			motor[motorBack2] = -100;
-			motor[motorFront1] = 100;
-			motor[motorFront2] = -100;
-			wait1Msec(moveTime[2]);
-			//go forwards
-			motor[motorBack1] = -100;
-			motor[motorBack2] = -100;
-			motor[motorFront1] = -100;
-			motor[motorFront2] = -100;
-			wait1Msec(moveTime[3]);
-			//turn left more
-			motor[motorBack1] = 100;
-			motor[motorBack2] = -100;
-			motor[motorFront1] = 100;
-			motor[motorFront2] = -100;
-			wait1Msec(moveTime[4]);
-			motor[motorBack1] = -100;
-			motor[motorBack2] = -100;
-			motor[motorFront1] = -100;
-			motor[motorFront2] = -100;
-			wait1Msec(moveTime[5]);
-			motor[motorBack1] = -0;
-			motor[motorBack2] = -0;
-			motor[motorFront1] = -0;
-			motor[motorFront2] = -0;
-			//raise lock
-			motor[motorLock] = 30;
-			wait1Msec(liftTime + 220);
-			motor[motorLock] = 0;
-			//back up
-			motor[motorBack1] = 100;
-			motor[motorBack2] = 100;
-			motor[motorFront1] = 100;
-			motor[motorFront2] = 100;
-			wait1Msec(moveTime[6]);
-			motor[motorBack1] = -0;
-			motor[motorBack2] = -0;
-			motor[motorFront1] = -0;
-			motor[motorFront2] = -0;
-			////turn 180
-			// motor[motorBack1] = -100;
-			// motor[motorBack2] = 100;
-			// motor[motorFront1] = -100;
-			// motor[motorFront2] = 100;
-			// wait1Msec(moveTime[7]);
-			////go forward
-			// motor[motorBack1] = -100;
-			// motor[motorBack2] = -100;
-			// motor[motorFront1] = -100;
-			// motor[motorFront2] = -100;
-			// wait1Msec(moveTime[8]);
-			// motor[motorBack1] = -0;
-			// motor[motorBack2] = -0;
-			// motor[motorFront1] = -0;
-			// motor[motorFront2] = -0;
-			////swing arm
-			// motor[motorArm] = 20;
-			// wait1Msec(armTime);
-			// motor[motorArm] = 0;
-			////back up
-			// motor[motorBack1] = 100;
-			// motor[motorBack2] = 100;
-			// motor[motorFront1] = 100;
-			// motor[motorFront2] = 100;
-			// wait1Msec(moveTime[9]);
-			// motor[motorBack1] = -0;
-			// motor[motorBack2] = -0;
-			// motor[motorFront1] = -0;
-			// motor[motorFront2] = -0;
-			////swing arm back
-			// motor[motorArm] = -20;
-			// wait1Msec(armTime);
-			// motor[motorArm] = 0;
-
+			//close arm
+			motor[motorArm] = -15;
+			wait1Msec(armTime + 260);
+			motor[motorArm] = 0;
 }
